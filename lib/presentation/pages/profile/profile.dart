@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'controller/profile_controller.dart';
@@ -27,13 +28,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  Future<void> _getDeviceInfo() async {
-    // Placeholder for Swift method call
-    // Replace this in Step 4 with MethodChannel
+Future<void> _getDeviceInfo() async {
+  const platform = MethodChannel('tezda/device_info');
+  try {
+    final result = await platform.invokeMethod<String>('getDeviceInfo');
     setState(() {
-      deviceInfo = 'iPhone 14 Pro Max (iOS 17.3.1)';
+      deviceInfo = result ?? 'Unknown';
+    });
+  } catch (e) {
+    setState(() {
+      deviceInfo = 'Failed to get device info: $e';
     });
   }
+}
 
   @override
   Widget build(BuildContext context) {
