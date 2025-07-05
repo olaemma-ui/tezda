@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tezda/core/enums/app_routes_enum.dart';
 
 import 'controller/profile_controller.dart';
-
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -28,19 +29,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-Future<void> _getDeviceInfo() async {
-  const platform = MethodChannel('tezda/device_info');
-  try {
-    final result = await platform.invokeMethod<String>('getDeviceInfo');
-    setState(() {
-      deviceInfo = result ?? 'Unknown';
-    });
-  } catch (e) {
-    setState(() {
-      deviceInfo = 'Failed to get device info: $e';
-    });
+  Future<void> _getDeviceInfo() async {
+    const platform = MethodChannel('tezda/device_info');
+    try {
+      final result = await platform.invokeMethod<String>('getDeviceInfo');
+      setState(() {
+        deviceInfo = result ?? 'Unknown';
+      });
+    } catch (e) {
+      setState(() {
+        deviceInfo = 'Failed to get device info: $e';
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +62,8 @@ Future<void> _getDeviceInfo() async {
           Center(
             child: CircleAvatar(
               radius: 48,
-              backgroundImage: profile.image.isNotEmpty
-                  ? NetworkImage(profile.image)
-                  : null,
+              backgroundImage:
+                  profile.image.isNotEmpty ? NetworkImage(profile.image) : null,
               child: profile.image.isEmpty
                   ? const Icon(Icons.person, size: 48)
                   : null,
@@ -80,6 +80,14 @@ Future<void> _getDeviceInfo() async {
             controller: _emailController,
             decoration: const InputDecoration(labelText: 'Email'),
             onChanged: notifier.updateEmail,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              ref.read(profileProvider.notifier).clearProfile();
+              context.pushReplacement(AppRoute.login.path);
+            },
+            child: const Text('Logout'),
           ),
           const SizedBox(height: 20),
           ElevatedButton(

@@ -25,7 +25,7 @@ class AuthController extends StateNotifier<AuthState> {
 
     _log.d('checkAuth → token=$token profile=$profile');
 
-    // ➋ OPTIONAL ‑ check token expiry if it’s a JWT
+    // ➋ OPTIONAL ‑ check token expiry if it's a JWT
     final isValid = token != null && !_isTokenExpired(token);
 
     state = isValid && profile != null
@@ -67,5 +67,13 @@ class AuthController extends StateNotifier<AuthState> {
   Future<void> logout() async {
     await LocalStorageManager.clearAll();
     state = const AuthState.unauthenticated();
+  }
+
+  /// Logout and clear all routes - this will automatically redirect to login
+  /// due to the auth guard in the router
+  Future<void> logoutAndClearRoutes() async {
+    _log.d('logoutAndClearRoutes → clearing auth state and storage');
+    await logout();
+    // The auth guard will automatically redirect to login
   }
 }

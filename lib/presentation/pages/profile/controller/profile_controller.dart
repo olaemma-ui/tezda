@@ -14,12 +14,24 @@ class ProfileController extends StateNotifier<ProfileDetails?> {
 
   Future<void> _loadProfile() async {
     final profile = await LocalStorageManager.userProfile;
-    state = profile ?? ProfileDetails(id: 0, username: '', email: '', firstName: '', lastName: '', gender: '', image: '', accessToken: '', refreshToken: '');
+    state = profile ??
+        ProfileDetails(
+          id: 0,
+          username: '',
+          email: '',
+          firstName: '',
+          lastName: '',
+          gender: '',
+          image: '',
+          accessToken: '',
+          refreshToken: '',
+        );
   }
 
   Future<void> updateName(String name) async {
     if (state == null) return;
-    final updated = state!.copyWith(firstName: name.split(' ')[0], lastName: name.split(' ')[1]);
+    final updated = state!
+        .copyWith(firstName: name.split(' ')[0], lastName: name.split(' ')[1]);
     state = updated;
     await LocalStorageManager.saveUserProfile(updated);
   }
